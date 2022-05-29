@@ -20,3 +20,5 @@ class Channel:
         def _send_message(subscriber, message):
             print(message)
 
+        def get_id():
+            return _id

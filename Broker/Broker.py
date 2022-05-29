@@ -10,14 +10,14 @@ class Broker:
         def get_user_list():
             return _userList
 
-        def add_user(User):
-            _userList.append(User)
+        def add_user(user):
+            _userList.append(user)
 
-        def remove_user(User):
-            _userList.append(User)
+        def remove_user(user):
+            _userList.append(user)
 
-        def add_channel(Channel):
-            _channelDict[Channel.getName()] = Channel
+        def add_channel(channel):
+            _channelDict[channel.get_id()] = channel
 
-        def remove_channel(Channel):
-            _channelDict.pop(Channel.getName())
+        def remove_channel(channel):
+            _channelDict.pop(channel.get_id())
