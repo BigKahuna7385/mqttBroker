@@ -1,6 +1,6 @@
 import json
 
-from Client.HeaderRepo import HeaderRepo
+from Client.HeaderBuilder import HeaderRepo
 
 
 class Message:
