@@ -1,6 +1,6 @@
 import json
 
-from Client.HeaderBuilder import HeaderBuilder
+from Utils.HeaderBuilder import HeaderBuilder
 
 
 class Message:

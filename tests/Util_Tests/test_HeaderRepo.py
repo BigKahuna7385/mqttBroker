@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from HeaderBuilder import HeaderBuilder
+from Utils.HeaderBuilder import HeaderBuilder
 
 
 class TestHeaderBuilder(TestCase):
