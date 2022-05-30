@@ -3,22 +3,22 @@ import hashlib
 
 class Channel:
     def __init__(self, topic):
-        _topic = topic
-        _subscribers = []
-        _id = hashlib.md5(_topic)
+        self._topic = topic
+        self._subscribers = []
+        self._id = hashlib.md5(_topic)
 
-        def subscribe(subscriber):
-            _subscribers.append(subscriber)
+    def subscribe(self, subscriber):
+        self._subscribers.append(subscriber)
 
-        def unsubscribe(subscriber):
-            _subscribers.pop(subscriber)
+    def unsubscribe(self, subscriber):
+        self._subscribers.pop(subscriber)
 
-        def publish(message):
-            for subscriber in _subscribers:
-                _send_message(subscriber, message)
+    def publish(self, message):
+        for subscriber in _subscribers:
+            self._send_message(subscriber, message)
 
-        def _send_message(subscriber, message):
-            print(message)
+    def _send_message(self, subscriber, message):
+        print(message)
 
-        def get_id():
-            return _id
+    def get_id(self):
+        return self._id
