@@ -1,17 +1,19 @@
-
 class Client:
     def __init__(self):
-        _channelDict = {}
+        self._channelDict = {}
 
-        def publish(message, channel):
-            if channel not in _channelDict:
-                return "Error"
-            channel.publish(message)
+    def publish(self, message, channel):
+        if channel not in self._channelDict:
+            return "Error"
+        channel.publish(message)
 
-        def subscribe_to_channel(channel):
-            _channelDict[channel.get_id()] = channel
-            channel.subscribe(self)
+    def subscribe_to_channel(self, channel):
+        self._channelDict[channel.get_id()] = channel
+        channel.subscribe_to_channel(self)
 
-        def unsubscribe_from_channel(channel):
-            _channelDict.pop(channel.get_id())
-            channel.unsuscribe(self)
+    def unsubscribe_from_channel(self, channel):
+        self._channelDict.pop(channel.get_id())
+        channel.unsubscribe_from_channel(self)
+
+    def get_channel_dict(self):
+        return self._channelDict
