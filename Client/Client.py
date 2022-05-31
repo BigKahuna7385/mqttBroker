@@ -1,5 +1,6 @@
 import logging
 import socket
+import time
 
 logging.basicConfig(format='%(levelname)s - %(asctime)s: %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
 
@@ -12,10 +13,12 @@ class Client:
         logging.info("Connected succesfully")
 
     def test_sending(self):
-        self._server_socket.send(b"Ping")
-        logging.info("Send: Ping")
-        data = self._server_socket.recv(1024)
-        logging.info(f"Received: {data}")
+        for i in range(10):
+            self._server_socket.send(b"Ping")
+            logging.info("Send: Ping")
+            data = self._server_socket.recv(1024)
+            logging.info(f"Received: {data}")
+            time.sleep(0.3)
         self._server_socket.close()
 
     def publish(self, message, channel):

@@ -13,11 +13,11 @@ class CommunicationRepository:
             self.output_sockets = []
             self.message_queues = {}
 
-        def add_to_inputs(self, socket, addr):
+        def add_to_inputs(self, socket):
             self.input_sockets.append(socket)
-            logging.info(f"adding socket: {addr}")
+            logging.info(f"adding socket: {socket.getpeername()}")
             #TODO: THis isn't correct yet, because the addr tupel in the connection is the same as the server one
-            hash_value = utils.create_socket_hash(addr)
+            hash_value = utils.create_socket_hash(socket)
             self.message_queues[hash_value] = Queue()
 
     instance = None

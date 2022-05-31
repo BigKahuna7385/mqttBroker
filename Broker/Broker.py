@@ -80,6 +80,16 @@ class Broker:
 
     def _read_data(self, socket):
         data = socket.recv(1024)
-        logging.info(f"Received {data} from {socket.getsockname()[0]}, {socket.getsockname()[1]}")
-        self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
-        self._communication_repository.output_sockets.append(socket)
+        if data:
+            logging.info(f"Received {data} from {socket.getpeername()[0]}, {socket.getpeername()[1]}")
+            if data == b"Ping":
+                self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
+                self._communication_repository.output_sockets.append(socket)
+        if not data:
+            logging.info(f"removing socket from input sources: {socket.getpeername()}")
+            self._communication_repository.input_sockets.remove(socket)
+            try:
+                self._communication_repository.output_sockets.remove(socket)
+            except ValueError:
+                pass
+            del self._communication_repository.message_queues[utils.create_socket_hash(socket)]
