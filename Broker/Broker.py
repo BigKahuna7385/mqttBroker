@@ -16,19 +16,22 @@ class Broker:
         self._userList = []
         self._channelDict = {}
         self._HOST = "127.0.0.1"
-        self._PORT = 1883
+        self._PORTS = (1883, 8883)
         self._communication_repository = CommunicationRepository()
-        self._create_server_socket(self._HOST, self._PORT)
+        self._server_sockets = []
+        self._create_server_socket(self._HOST, self._PORTS[0])
+        self._create_server_socket(self._HOST, self._PORTS[1])
         logging.info("Starting socket service")
 
     def _create_server_socket(self, host, port):
-        logging.info(f"Initializing Server Socket for ips {self._HOST} on port {self._PORT}")
-        self._server_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
-        self._server_socket.setblocking(False)
-        self._server_socket.bind((host, port))
-        self._server_socket.listen()
+        logging.info(f"Initializing Server Socket for ips {host} on port {port}")
+        server_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
+        server_socket.setblocking(False)
+        server_socket.bind((host, port))
+        server_socket.listen()
         logging.info("Finished Serversocket initialization")
-        self._communication_repository.input_sockets.append(self._server_socket)
+        self._server_sockets.append(server_socket)
+        self._communication_repository.input_sockets.append(server_socket)
         logging.info("Added Server Socket to input sockets")
 
     def run_socket_service(self):
@@ -37,7 +40,7 @@ class Broker:
                                                             self._communication_repository.output_sockets,
                                                             self._communication_repository.input_sockets)
             for socket in readable:
-                if socket is self._server_socket:
+                if socket in self._server_sockets:
                     self._accept_client(socket)
                 else:
                     self._read_data(socket)
@@ -55,7 +58,7 @@ class Broker:
 
     def _accept_client(self, socket):
         connection, address = socket.accept()
-        logging.info(f"Accepted client {address}")
+        logging.info(f"Accepted client {address} on {socket.getsockname()}")
         connection.setblocking(False)
         self._communication_repository.add_to_inputs(connection)
         logging.info("Added message queue ini")

@@ -5,15 +5,15 @@ import time
 logging.basicConfig(format='%(levelname)s - %(asctime)s: %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
 
 class Client:
-    def __init__(self):
+    def __init__(self, host, port):
         self._channelDict = {}
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         logging.info("Connecting to server")
-        self._server_socket.connect(("127.0.0.1", 1883))
+        self._server_socket.connect((host, port))
         logging.info("Connected succesfully")
 
-    def test_sending(self):
-        for i in range(10):
+    def test_sending(self, amount):
+        for i in range(amount):
             self._server_socket.send(b"Ping")
             logging.info("Send: Ping")
             data = self._server_socket.recv(1024)
