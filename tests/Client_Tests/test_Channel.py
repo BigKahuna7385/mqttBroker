@@ -19,3 +19,10 @@ class TestChannel(TestCase):
         self.assertEqual(len(test_list), 0)
 
 
+    def test_publish_message(self):
+        broker = Mock()
+        channel = Channel(broker, "a/b")
+        client = Mock()
+        channel.subscribe_to_channel(client)
+        channel.publish("This is a test Message")
+

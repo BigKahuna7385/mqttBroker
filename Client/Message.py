@@ -9,5 +9,5 @@ class Message:
         self._payload = payload
         self.header_builder = HeaderBuilder()
 
-    def build(self):
-        return self.header_builder.build_header(self._header_type, self._payload) + json.dumps(self._payload)
+    def build(self, topic):
+        return self.header_builder.build_header(self._header_type,  json.dumps(self._payload), topic) + json.dumps(self._payload).encode('utf-8')
