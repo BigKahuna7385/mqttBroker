@@ -8,14 +8,17 @@ class Channel:
         self._topic = topic
         self._subscribers = []
         self._communication_repository = CommunicationRepository()
-        self._id = hashlib.md5(self._topic.encode()).hexdigest()
+        self._id = hashlib.md5(self._topic).hexdigest()
 
     def subscribe(self, subscriber):
         self._subscribers.append(subscriber)
         print(f"Subscribed to {self._topic}")
 
     def unsubscribe(self, subscriber):
-        self._subscribers.pop(subscriber)
+        for old_subscriber in self._subscribers:
+            if old_subscriber.get_client_id() == subscriber.get_client_id():
+                self._subscribers.pop(self._subscribers.index(old_subscriber))
+                print(f"Unsubscribed from {self._topic}")
 
     def publish(self, origin, message):
         for subscriber in self._subscribers:

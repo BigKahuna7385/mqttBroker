@@ -15,4 +15,10 @@ class MessageParser:
         return int.from_bytes(message[1:2], "big")
 
     def parse_topic(self, data):
-        return "test"
+        variable_header_start = 2
+        data_without_fixed_header = data[variable_header_start:]
+        topic_length = self._parse_topic_length(data_without_fixed_header[:2])
+        return data_without_fixed_header[variable_header_start:variable_header_start + topic_length]
+
+    def _parse_topic_length(self, topic_length_bytes):
+        return int.from_bytes(topic_length_bytes, "big")

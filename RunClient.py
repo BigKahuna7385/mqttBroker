@@ -9,4 +9,5 @@ if __name__ == '__main__':
     client.open_socket()
     channel.subscribe_to_channel(client)
     channel.publish(client, "Dies ist ein Test")
+    channel.unsubscribe_from_channel(client)
     client.close_socket()

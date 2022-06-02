@@ -11,13 +11,13 @@ class Channel:
 
     def subscribe_to_channel(self, client):
         self._client_list.append(client)
-        message = Message("SUBSCRIBE", {"topic": self._topic})
-        client.send(message.build(""))
+        message = Message("SUBSCRIBE", "")
+        client.send(message.build(self._topic))
 
     def unsubscribe_from_channel(self, client):
         self._client_list.pop(self._find_index_of(client))
-        message = Message("UNSUBSCRIBE", {"topic": self._topic})
-        client.send(message.build(""))
+        message = Message("UNSUBSCRIBE", "")
+        client.send(message.build(self._topic))
 
     def publish(self, client, message):
         message = Message("PUBLISH", message)

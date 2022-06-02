@@ -91,6 +91,7 @@ class Broker:
             logging.info(f"Received {data} from {socket.getpeername()[0]}, {socket.getpeername()[1]}")
             subscriber = self._get_subscriber(socket.getpeername()[0], socket.getpeername()[1])
             if data:
+                print(data)
                 header_type = self._message_parser.parse_fixed_header(data)
                 print(header_type)
                 if header_type == "SUBSCRIBE":
@@ -99,6 +100,7 @@ class Broker:
                     self._unsubscribe_from_channel(data, subscriber)
                 elif header_type == "PUBLISH":
                     self._publish(data, subscriber)
+
                 self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
                 self._communication_repository.output_sockets.append(socket)
         if not data:
@@ -118,7 +120,10 @@ class Broker:
         self._channelDict[channel.get_id()].subscribe(subscriber)
 
     def _unsubscribe_from_channel(self, data, subscriber):
-        pass
+        topic = self._message_parser.parse_topic(data)
+        channel = Channel(topic)
+        if channel.get_id() in self._channelDict:
+            self._channelDict[channel.get_id()].unsubscribe(subscriber)
 
     def _publish(self, data, subscriber):
         pass
