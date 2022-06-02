@@ -6,6 +6,7 @@ from queue import Queue
 
 from Broker import utils
 from Broker.CommunicationRepository import CommunicationRepository
+from Utils.MessageParser import MessageParser
 
 logging.basicConfig(format='%(levelname)s - %(asctime)s: %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
 
@@ -21,6 +22,7 @@ class Broker:
         self._server_sockets = []
         self._create_server_socket(self._HOST, self._PORTS[0])
         self._create_server_socket(self._HOST, self._PORTS[1])
+        self._message_parser = MessageParser()
         logging.info("Starting socket service")
 
     def _create_server_socket(self, host, port):
@@ -85,7 +87,8 @@ class Broker:
         data = socket.recv(1024)
         if data:
             logging.info(f"Received {data} from {socket.getpeername()[0]}, {socket.getpeername()[1]}")
-            if data == b"Ping":
+            if data:
+                header_type = self._message_parser.parse_fixed_header(data)
                 self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
                 self._communication_repository.output_sockets.append(socket)
         if not data:

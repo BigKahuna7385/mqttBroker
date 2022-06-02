@@ -1,7 +1,12 @@
+from Client.Broker import Broker
+from Client.Channel import Channel
 from Client.Client import Client
 
 if __name__ == '__main__':
-    client = Client("127.0.0.1", 1883)
-    client.test_sending(2)
-    client2 = Client("127.0.0.1", 8883)
-    client2.test_sending(2)
+    channel = Channel("a/b")
+    broker = Broker("127.0.0.1", 1883)
+    client = Client(broker)
+    client.open_socket()
+    channel.subscribe_to_channel(client)
+    channel.publish(client, "Dies ist ein Test")
+    client.close_socket()

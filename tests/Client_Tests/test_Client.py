@@ -8,7 +8,7 @@ from Client.Client import Client
 
 class TestClient(TestCase):
     def test_subscribe_to_channel(self):
-        topic = "catfacts"
+        topic = "cat/facts"
         channel_id = hashlib.md5(topic.encode())
         channel = Mock(get_id=Mock(return_value=channel_id))
         client = Client()
@@ -21,8 +21,7 @@ class TestClient(TestCase):
         self.assertEqual(len(channel_dict), 0)
 
     def test_subscribe_to_real_channel(self):
-        broker = Mock()
-        channel = Channel(broker, "catfacts")
+        channel = Channel("cat/facts")
         client = Client()
         client.subscribe_to_channel(channel)
 

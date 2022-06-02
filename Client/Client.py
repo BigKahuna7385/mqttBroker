@@ -4,22 +4,12 @@ import time
 
 logging.basicConfig(format='%(levelname)s - %(asctime)s: %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
 
-class Client:
-    def __init__(self, host, port):
-        self._channelDict = {}
-        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        logging.info("Connecting to server")
-        self._server_socket.connect((host, port))
-        logging.info("Connected succesfully")
 
-    def test_sending(self, amount):
-        for i in range(amount):
-            self._server_socket.send(b"Ping")
-            logging.info("Send: Ping")
-            data = self._server_socket.recv(1024)
-            logging.info(f"Received: {data}")
-            time.sleep(0.3)
-        self._server_socket.close()
+class Client:
+    def __init__(self, broker):
+        self._server_socket = None
+        self._broker = broker
+        self._channelDict = {}
 
     def publish(self, message, channel):
         if channel not in self._channelDict:
@@ -36,3 +26,17 @@ class Client:
 
     def get_channel_dict(self):
         return self._channelDict
+
+    def open_socket(self):
+        self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._server_socket.connect((self._broker.get_ip_address(), self._broker.get_port()))
+
+    def send(self, message):
+        self._server_socket.send(message)
+        logging.info(f"Received {message}")
+        data = self._server_socket.recv(1024)
+        logging.info(f"Received: {data}")
+        time.sleep(0.3)
+
+    def close_socket(self):
+        self._server_socket.close()
