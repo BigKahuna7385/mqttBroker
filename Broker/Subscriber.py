@@ -1,6 +1,9 @@
+import hashlib
+
+
 class Subscriber:
-    def __init__(self, client_id, ip_address, port):
-        self._client_id = client_id
+    def __init__(self, ip_address, port):
+        self._client_id = hashlib.md5(str(ip_address).encode() + str(port).encode())
         self._ip_address = ip_address
         self._port = port
 

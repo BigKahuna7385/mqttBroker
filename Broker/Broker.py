@@ -5,7 +5,9 @@ import socket as s
 from queue import Queue
 
 from Broker import utils
+from Broker.Channel import Channel
 from Broker.CommunicationRepository import CommunicationRepository
+from Broker.Subscriber import Subscriber
 from Utils.MessageParser import MessageParser
 
 logging.basicConfig(format='%(levelname)s - %(asctime)s: %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
@@ -87,8 +89,16 @@ class Broker:
         data = socket.recv(1024)
         if data:
             logging.info(f"Received {data} from {socket.getpeername()[0]}, {socket.getpeername()[1]}")
+            subscriber = self._get_subscriber(socket.getpeername()[0], socket.getpeername()[1])
             if data:
                 header_type = self._message_parser.parse_fixed_header(data)
+                print(header_type)
+                if header_type == "SUBSCRIBE":
+                    self._subscribe_to_channel(data, subscriber)
+                elif header_type == "UNSUBSCRIBE":
+                    self._unsubscribe_from_channel(data, subscriber)
+                elif header_type == "PUBLISH":
+                    self._publish(data, subscriber)
                 self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
                 self._communication_repository.output_sockets.append(socket)
         if not data:
@@ -99,3 +109,24 @@ class Broker:
             except ValueError:
                 pass
             del self._communication_repository.message_queues[utils.create_socket_hash(socket)]
+
+    def _subscribe_to_channel(self, data, subscriber):
+        topic = self._message_parser.parse_topic(data)
+        channel = Channel(topic)
+        if not channel.get_id() in self._channelDict:
+            self.add_channel(channel)
+        self._channelDict[channel.get_id()].subscribe(subscriber)
+
+    def _unsubscribe_from_channel(self, data, subscriber):
+        pass
+
+    def _publish(self, data, subscriber):
+        pass
+
+    def _get_subscriber(self, ip_address, port):
+        new_subscriber = Subscriber(ip_address, port)
+        for user in self._userList:
+            if new_subscriber.get_client_id() == user.get_client_id():
+                return user
+        self._userList.append(new_subscriber)
+        return new_subscriber

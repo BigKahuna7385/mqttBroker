@@ -35,20 +35,20 @@ class HeaderRepository:
         }
 
         self._reversed_type_dict = {
-            "0001": "CONNECT",
-            "0002": "CONNACK",
-            "0003": "PUBLISH",
-            "0004": "PUBREC",
-            "0005": "PUBREL",
-            "0006": "PUBCOMP",
-            "0007": "SUBSCRIBE",
-            "0008": "SUBACK",
-            "0009": "UNSUBSCRIBE",
-            "000A": "UNSUBACK",
-            "000B": "PINGREQ",
-            "000C": "PINGRESP",
-            "000D": "DISCONNECT",
-            "000E": "AUTH"
+            1: "CONNECT",
+            2: "CONNACK",
+            3: "PUBLISH",
+            4: "PUBREC",
+            5: "PUBREL",
+            6: "PUBCOMP",
+            7: "SUBSCRIBE",
+            8: "SUBACK",
+            9: "UNSUBSCRIBE",
+            10: "UNSUBACK",
+            11: "PINGREQ",
+            12: "PINGRESP",
+            13: "DISCONNECT",
+            14: "AUTH"
         }
 
     def get_flag(self, header_type):
@@ -57,5 +57,5 @@ class HeaderRepository:
     def get_type(self, header_type):
         return self._type_dict[header_type]
 
-    def get_type_from(self, byte_code):
-        return self._reversed_type_dict[byte_code.hex()]
+    def get_type_from(self, integer):
+        return self._reversed_type_dict[integer]
