@@ -1,8 +1,7 @@
-import hashlib
 import logging
-import select
 import socket as s
-from queue import Queue
+
+import select
 
 from Broker import utils
 from Broker.Channel import Channel
@@ -126,7 +125,11 @@ class Broker:
             self._channelDict[channel.get_id()].unsubscribe(subscriber)
 
     def _publish(self, data, subscriber):
-        pass
+        topic = self._message_parser.parse_topic(data)
+        message = self._message_parser.parse_message(data)
+        channel = Channel(topic)
+        if channel.get_id() in self._channelDict:
+            self._channelDict[channel.get_id()].publish(subscriber, data)
 
     def _get_subscriber(self, ip_address, port):
         new_subscriber = Subscriber(ip_address, port)
