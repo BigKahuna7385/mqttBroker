@@ -32,4 +32,4 @@ class MessageParser:
         return data[message_start:message_length]
 
     def _get_message_length(self, data):
-        return int.from_bytes(data[2], "big")
+        return int.from_bytes(data[0:2], "big")
