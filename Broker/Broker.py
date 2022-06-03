@@ -26,7 +26,7 @@ class Broker:
         self._message_parser = MessageParser()
         logging.info("Starting socket service")
 
-    def _create_server_socket(self, host, port):
+    def _create_server_socket(self, host: str, port: int):
         logging.info(f"Initializing Server Socket for ips {host} on port {port}")
         server_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
         server_socket.setblocking(False)
@@ -59,7 +59,7 @@ class Broker:
                 self._communication_repository.output_sockets.remove(socket)
                 socket.close()
 
-    def _accept_client(self, socket):
+    def _accept_client(self, socket: s.socket):
         connection, address = socket.accept()
         logging.info(f"Accepted client {address} on {socket.getsockname()}")
         connection.setblocking(False)
@@ -72,23 +72,23 @@ class Broker:
     def get_user_list(self):
         return self._userList
 
-    def add_user(self, user):
+    def add_user(self, user: Subscriber):
         self._userList.append(user)
 
-    def remove_user(self, user):
+    def remove_user(self, user: Subscriber):
         self._userList.append(user)
 
-    def add_channel(self, channel):
+    def add_channel(self, channel: Channel):
         self._channelDict[channel.get_id()] = channel
 
-    def remove_channel(self, channel):
+    def remove_channel(self, channel: Channel):
         self._channelDict.pop(channel.get_id())
 
-    def _read_data(self, socket):
+    def _read_data(self, socket: s.socket):
         data = socket.recv(1024)
         if data:
             logging.info(f"Received {data} from {socket.getpeername()[0]}, {socket.getpeername()[1]}")
-            subscriber = self._get_subscriber(socket.getpeername()[0], socket.getpeername()[1])
+            subscriber = self._get_subscriber(socket)
             if data:
                 header_type = self._message_parser.parse_fixed_header(data)
                 logging.info(f"Received header type: {header_type}")
@@ -99,8 +99,8 @@ class Broker:
                 elif header_type == "PUBLISH":
                     self._publish(data, subscriber)
 
-                self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
-                self._communication_repository.output_sockets.append(socket)
+                # self._communication_repository.message_queues[utils.create_socket_hash(socket)].put(b"Pong")
+                # self._communication_repository.output_sockets.append(socket)
         if not data:
             logging.info(f"removing socket from input sources: {socket.getpeername()}")
             self._communication_repository.input_sockets.remove(socket)
@@ -110,28 +110,28 @@ class Broker:
                 pass
             del self._communication_repository.message_queues[utils.create_socket_hash(socket)]
 
-    def _subscribe_to_channel(self, data, subscriber):
+    def _subscribe_to_channel(self, data: bytes, subscriber: Subscriber):
         topic = self._message_parser.parse_topic(data)
         channel = Channel(topic)
         if not channel.get_id() in self._channelDict:
             self.add_channel(channel)
         self._channelDict[channel.get_id()].subscribe(subscriber)
 
-    def _unsubscribe_from_channel(self, data, subscriber):
+    def _unsubscribe_from_channel(self, data: bytes, subscriber: Subscriber):
         topic = self._message_parser.parse_topic(data)
         channel = Channel(topic)
         if channel.get_id() in self._channelDict:
             self._channelDict[channel.get_id()].unsubscribe(subscriber)
 
-    def _publish(self, data, subscriber):
+    def _publish(self, data: bytes, subscriber: Subscriber):
         topic = self._message_parser.parse_topic(data)
         message = self._message_parser.parse_message(data)
         channel = Channel(topic)
         if channel.get_id() in self._channelDict:
             self._channelDict[channel.get_id()].publish(subscriber, message)
 
-    def _get_subscriber(self, ip_address, port):
-        new_subscriber = Subscriber(ip_address, port)
+    def _get_subscriber(self, socket: s.socket) -> Subscriber:
+        new_subscriber = Subscriber(socket)
         for user in self._userList:
             if new_subscriber.get_client_id() == user.get_client_id():
                 return user

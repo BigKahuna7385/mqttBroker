@@ -6,18 +6,18 @@ class HeaderBuilder:
         self.variable_header = ""
         self._header_repo = HeaderRepository()
 
-    def _get_control_package_type(self, header_type):
+    def _get_control_package_type(self, header_type: str) -> str:
         return "{0:04b}".format(int(self._header_repo.get_type(header_type), 16))
 
-    def _get_flag(self, header_type):
+    def _get_flag(self, header_type: str) -> str:
         return "{0:04b}".format(int(self._header_repo.get_flag(header_type), 16))
 
-    def _encode_message_length(self, message):
+    def _encode_message_length(self, message: bytes) -> bytes:
         if len(message) > 255:
             return int(0).to_bytes(1, 'big')
         return len(message).to_bytes(1, 'big')
 
-    def _build_variable_header(self, topic):
+    def _build_variable_header(self, topic: str):
         topic_length = len(topic)
         extractor_msb = int("1111111100000000", 2)
         len_msb = topic_length & extractor_msb
@@ -26,7 +26,7 @@ class HeaderBuilder:
         len_lsb = topic_length & extractor_lsb
         self.variable_header = (len_msb.to_bytes(1, 'big') + len_lsb.to_bytes(1, 'big') + bytes(topic, 'utf-8'))
 
-    def build_header(self, header_type, message, topic):
+    def build_header(self, header_type: str, message: str, topic: str) -> bytes:
         if topic:
             self._build_variable_header(topic)
         else:
@@ -40,7 +40,7 @@ class HeaderBuilder:
         return bitstring_to_bytes(control_package + get_flag) + message_length + self.variable_header
 
 
-def bitstring_to_bytes(s):
+def bitstring_to_bytes(s: str) -> bytes:
     return int(s, 2).to_bytes(len(s) // 8, byteorder='big')
 
 

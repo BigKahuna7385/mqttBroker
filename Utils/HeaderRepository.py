@@ -51,11 +51,11 @@ class HeaderRepository:
             14: "AUTH"
         }
 
-    def get_flag(self, header_type):
+    def get_flag(self, header_type: str) -> str:
         return self._flags_dict[header_type]
 
-    def get_type(self, header_type):
+    def get_type(self, header_type: str) -> str:
         return self._type_dict[header_type]
 
-    def get_type_from(self, integer):
+    def get_type_from(self, integer: int) -> str:
         return self._reversed_type_dict[integer]
