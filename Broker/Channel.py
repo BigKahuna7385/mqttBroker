@@ -21,6 +21,7 @@ class Channel:
                 print(f"Unsubscribed from {self._topic}")
 
     def publish(self, origin, message):
+        print(f"Message: {message}")
         for subscriber in self._subscribers:
             if subscriber is origin:
                 continue

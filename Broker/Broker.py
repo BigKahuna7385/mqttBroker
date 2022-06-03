@@ -1,8 +1,7 @@
-import hashlib
 import logging
-import select
 import socket as s
-from queue import Queue
+
+import select
 
 from Broker import utils
 from Broker.Channel import Channel
@@ -91,9 +90,8 @@ class Broker:
             logging.info(f"Received {data} from {socket.getpeername()[0]}, {socket.getpeername()[1]}")
             subscriber = self._get_subscriber(socket.getpeername()[0], socket.getpeername()[1])
             if data:
-                print(data)
                 header_type = self._message_parser.parse_fixed_header(data)
-                print(header_type)
+                logging.info(f"Received header type: {header_type}")
                 if header_type == "SUBSCRIBE":
                     self._subscribe_to_channel(data, subscriber)
                 elif header_type == "UNSUBSCRIBE":
@@ -126,7 +124,11 @@ class Broker:
             self._channelDict[channel.get_id()].unsubscribe(subscriber)
 
     def _publish(self, data, subscriber):
-        pass
+        topic = self._message_parser.parse_topic(data)
+        message = self._message_parser.parse_message(data)
+        channel = Channel(topic)
+        if channel.get_id() in self._channelDict:
+            self._channelDict[channel.get_id()].publish(subscriber, message)
 
     def _get_subscriber(self, ip_address, port):
         new_subscriber = Subscriber(ip_address, port)

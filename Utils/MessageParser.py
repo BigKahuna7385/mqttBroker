@@ -17,8 +17,19 @@ class MessageParser:
     def parse_topic(self, data):
         variable_header_start = 2
         data_without_fixed_header = data[variable_header_start:]
-        topic_length = self._parse_topic_length(data_without_fixed_header[:2])
+        topic_length = self._parse_topic_length(data)
         return data_without_fixed_header[variable_header_start:variable_header_start + topic_length]
 
-    def _parse_topic_length(self, topic_length_bytes):
-        return int.from_bytes(topic_length_bytes, "big")
+    def _parse_topic_length(self, data):
+        return int.from_bytes(data[3:4], "big")
+
+    def parse_message(self, data):
+        fixed_header_length = 2
+        topic_header_bytes_length = 2
+        variable_header_length = self._parse_topic_length(data)
+        message_start = fixed_header_length + topic_header_bytes_length + variable_header_length
+        message_length = self._get_message_length(data)
+        return data[message_start:message_length]
+
+    def _get_message_length(self, data):
+        return int.from_bytes(data[0:2], "big")
