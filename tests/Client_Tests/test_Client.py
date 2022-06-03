@@ -11,7 +11,8 @@ class TestClient(TestCase):
         topic = "cat/facts"
         channel_id = hashlib.md5(topic.encode())
         channel = Mock(get_id=Mock(return_value=channel_id))
-        client = Client()
+        broker = Mock()
+        client = Client(broker)
         client.subscribe_to_channel(channel)
         channel_dict = client.get_channel_dict()
         self.assertEqual(channel_dict[channel_id], channel)
@@ -19,18 +20,3 @@ class TestClient(TestCase):
         client.unsubscribe_from_channel(channel)
         channel_dict = client.get_channel_dict()
         self.assertEqual(len(channel_dict), 0)
-
-    def test_subscribe_to_real_channel(self):
-        channel = Channel("cat/facts")
-        client = Client()
-        client.subscribe_to_channel(channel)
-
-        test_list = channel.get_client_list()
-        self.assertEqual(test_list[0], client)
-
-        channel_dict = client.get_channel_dict()
-        self.assertEqual(channel_dict[channel.get_id()], channel)
-
-        channel.unsubscribe_from_channel(client)
-        test_list = channel.get_client_list()
-        self.assertEqual(len(test_list), 0)

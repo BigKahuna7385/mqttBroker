@@ -20,7 +20,7 @@ class Channel:
         message = Message("UNSUBSCRIBE", "")
         client.send(message.build(self._topic))
 
-    def publish(self, client: Client.Client.Client, message: Message):
+    def publish(self, client: Client.Client.Client, message: str):
         message = Message("PUBLISH", message)
         client.send(message.build(self._topic))
 

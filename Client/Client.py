@@ -35,7 +35,7 @@ class Client:
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.connect((self._broker.get_ip_address(), self._broker.get_port()))
 
-    def send(self, message: Message):
+    def send(self, message: bytes):
         self._server_socket.send(message)
         logging.info(f"Send {message}")
         time.sleep(0.3)
